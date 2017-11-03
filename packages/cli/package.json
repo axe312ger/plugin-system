@@ -1,0 +1,25 @@
+{
+  "name": "cli",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "bin": {
+    "cli": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon -w \"../**/*.js\" index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "core": "^0.0.1",
+    "utils": "^0.0.1",
+    "yargs": "^10.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.12.1"
+  }
+}

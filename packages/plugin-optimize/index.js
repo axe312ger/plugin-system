@@ -1,7 +1,8 @@
 const Rx = require('rxjs')
-const bunyan = require('bunyan')
 
-const log = bunyan.createLogger({name: 'plugin-optimize'})
+const { createLogger } = require('utils')
+
+const log = createLogger('plugin-optimize')
 
 module.exports = {
   id: 'optimize',
