@@ -1,22 +1,14 @@
-import Rx from 'rxjs'
-
-import createAnalyze$ from 'plugin-analyze'
+const Rx = require('rxjs')
 
 const CONCURRENCY = 2
 
-const plugins = [{
-  id: 'analyze',
-  factory: createAnalyze$
-},
-{
-  id: 'analyze2',
-  factory: createAnalyze$
-}]
+const enabledPlugins = ['analyze', 'optimize']
 
 const source$ = Rx.Observable
   .interval(500).take(4)
   .map((x) => ({
     filename: `${x}.jpg`,
+    processed: false,
     data: {
       keepme: true
     }
@@ -26,15 +18,14 @@ const core$ = source$
   // For any given file
   .mergeMap((file) => {
     // Create a observable of all activated plugins
-    return Rx.Observable.from(plugins)
+    return Rx.Observable.from(enabledPlugins)
+      // Load plugin async. To be replaced with sth like:
+      // .mergeMap((name) => import(`plugin-${name}`))
+      .map((name) => require(`plugin-${name}`))
       // and run them async based on concurrency
       .mergeMap(
-        // run plugin
         (plugin) => plugin.factory(file),
-        // prepare data for storage
-        (plugin, result) => ({
-          [plugin.id]: result
-        }),
+        null,
         CONCURRENCY
       )
       // Accumulate data results
@@ -42,9 +33,12 @@ const core$ = source$
         ...data,
         ...result
       }))
-      // Inject new data into results
+      // Create final file object
       .map((data) => ({
         ...file,
+        // Set processed flag to true
+        processed: true,
+        // Inject new data into results
         data: {
           ...file.data,
           data
