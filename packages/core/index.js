@@ -1,7 +1,9 @@
 const Rx = require('rxjs')
+const bunyan = require('bunyan')
+
+const log = bunyan.createLogger({name: 'core'})
 
 const CONCURRENCY = 2
-
 const enabledPlugins = ['analyze', 'optimize']
 
 const source$ = Rx.Observable
@@ -13,6 +15,7 @@ const source$ = Rx.Observable
       keepme: true
     }
   }))
+  .do((file) => log.info(`Recieved file ${file.filename}`))
 
 const core$ = source$
   // For any given file
@@ -45,5 +48,6 @@ const core$ = source$
         }
       }))
   })
+  .catch((err) => log.error(err))
 
-core$.subscribe((x) => console.log('done', x))
+core$.subscribe((file) => log.info({file}, 'Finished file processing'))
